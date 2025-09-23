@@ -1,0 +1,19 @@
+{
+    "name": "matteo/api",
+    "autoload": {
+        "psr-4": {
+            "Matteo\\Api\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Matteo Simone Borghi",
+            "email": "Bogghi@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.7",
+        "php-di/php-di": "^7.1"
+    }
+}

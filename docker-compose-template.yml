@@ -1,0 +1,39 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9000:80"
+    depends_on:
+      - php
+    networks:
+      - internal
+    volumes:
+      - ./api/:/var/www/html/API/v1
+
+  php:
+    image: php:fpm-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile-php-fpm
+    networks:
+      - internal
+    volumes:
+      - ./api/:/var/www/html/API/v1
+
+  mariadb:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: db_name
+    networks:
+      - internal
+    ports:
+      - "3306:3306"
+
+networks:
+  internal:
+    driver: bridge
