@@ -2,7 +2,7 @@
     "name": "matteo/api",
     "autoload": {
         "psr-4": {
-            "Matteo\\Api\\": "src/"
+            "App": "./"
         }
     },
     "authors": [
