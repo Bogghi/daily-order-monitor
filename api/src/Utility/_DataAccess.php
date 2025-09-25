@@ -9,20 +9,21 @@ class _DataAccess
 
     public bool $debug = false;
 
-    public function __construct(?PDO $pdo = null) {
+    public function __construct(?PDO $pdo = null)
+    {
         $this->pdo = $pdo;
     }
 
     private function connectPdo(): void
     {
-        if(!$this->pdo) {
+        if (!$this->pdo) {
             $this->pdo = new PDO('mysql:host=' . DB_HOST . ';port=3306;dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASSWORD);
         }
     }
 
     private function interpretField($field): mixed
     {
-        if(is_bool($field)) {
+        if (is_bool($field)) {
             return $field ? 1 : 0;
         }
         return ($field === "null") ? null : $field;
@@ -39,8 +40,7 @@ class _DataAccess
         $countPartial = false,
         $distinct = false,
         $fetchMode = PDO::FETCH_ASSOC
-    ): mixed
-    {
+    ): mixed {
         $this->connectPdo();
 
         $limitQueryPart = "";
@@ -94,7 +94,7 @@ class _DataAccess
                 $value = $isString ? ltrim($value, "!><") : $value;
                 $placeholder = $value === "now" ? "now()" : "?";
                 $wherePart .= $keyArg . ' ' . $notPart . $lessPart . $morePart . $likePart . ' ' . $placeholder . ' ';
-                if($placeholder === "?") {
+                if ($placeholder === "?") {
                     $params[] = $this->interpretField($value);
                 }
                 $i++;
@@ -126,7 +126,7 @@ class _DataAccess
 
         $joinPart = "";
         if ($join && count($join) <= 10) {
-            foreach($join as $joinTable => $tableId) {
+            foreach ($join as $joinTable => $tableId) {
                 $joinPart .= " INNER JOIN $joinTable ON $joinTable.$tableId = $table.$tableId ";
             }
         }
@@ -138,10 +138,10 @@ class _DataAccess
         $stmt = $this->pdo->prepare($sql);
         $exec = $stmt->execute($params);
 
-        if($this->debug) {
+        if ($this->debug) {
             ob_start();
             $stmt->debugDumpParams();
-            error_log("DataAccess get debug: ".ob_get_clean());
+            error_log("DataAccess get debug: " . ob_get_clean());
             $this->debug = false;
         }
 
@@ -189,12 +189,12 @@ class _DataAccess
                         if (!$columnSet) {
                             $columnString .= $columnArray . ",";
                             //todo support all now() params
-                            if($valueArray === "NOW(6)") {
+                            if ($valueArray === "NOW(6)") {
                                 $valueString .= $valueArray . ",";
                                 continue;
                             }
 
-                            if($duplicateUpdateKey != $columnArray) {
+                            if ($duplicateUpdateKey != $columnArray) {
                                 $duplicateString .= "$columnArray=VALUES($columnArray), ";
                             }
                         }
@@ -207,15 +207,14 @@ class _DataAccess
                 $columnSet = true;
             }
             $valueString = rtrim($valueString, ", ");
-        }
-        else {
+        } else {
             $valueString .= "(";
             foreach ($requestData as $column => $value) {
                 if ($column) {
                     $columnString .= $column . ",";
                     $valueString .= "?,";
                     $params[] = $this->interpretField($value);
-                    if($duplicateUpdateKey != $column) {
+                    if ($duplicateUpdateKey != $column) {
                         $duplicateString .= "$column=VALUES($column), ";
                     }
                 }
@@ -228,17 +227,17 @@ class _DataAccess
 
         $sql = "INSERT INTO " . $table . " (" . $columnString . ") VALUES " . $valueString;
 
-        if($duplicateUpdateKey) {
-            $sql .= " ON DUPLICATE KEY UPDATE ".rtrim($duplicateString, ", ");
+        if ($duplicateUpdateKey) {
+            $sql .= " ON DUPLICATE KEY UPDATE " . rtrim($duplicateString, ", ");
         }
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
 
-        if($this->debug) {
+        if ($this->debug) {
             ob_start();
             $stmt->debugDumpParams();
-            error_log("DataAccess add debug: ".ob_get_clean());
+            error_log("DataAccess add debug: " . ob_get_clean());
             $this->debug = false;
         }
 
@@ -262,7 +261,8 @@ class _DataAccess
         return $stmt->rowCount() > 0;
     }
 
-    private function queryWherePart($args, &$params): string {
+    private function queryWherePart($args, &$params): string
+    {
         $wherePart = "";
         if (!empty($args)) {
             $wherePart = ' WHERE ';
@@ -287,7 +287,7 @@ class _DataAccess
     public function customQuery($query, $params, $rowCount = false): false|int|\PDOStatement
     {
 
-        if(!$this->pdo) {
+        if (!$this->pdo) {
             $this->connectPdo();
         }
         $stmt = $this->pdo->prepare($query);
@@ -304,7 +304,8 @@ class _DataAccess
         }
     }
 
-    public function update($table, $args, $requestData): bool {
+    public function update($table, $args, $requestData): bool
+    {
 
         $this->connectPdo();
 
@@ -325,10 +326,10 @@ class _DataAccess
         $stmt = $this->pdo->prepare($sql);
         $exec = $stmt->execute($params);
 
-        if($this->debug) {
+        if ($this->debug) {
             ob_start();
             $stmt->debugDumpParams();
-            error_log("DataAccess update debug: ".ob_get_clean());
+            error_log("DataAccess update debug: " . ob_get_clean());
             $this->debug = false;
         }
 

@@ -1,2 +1,2 @@
 select *
-from orders;
+from users_oauth_tokens;

@@ -1,5 +1,6 @@
 <?php
 
+// \AuthController
 namespace App\Controllers;
 
 use App\Utility\_DataAccess;
@@ -84,37 +85,71 @@ class AuthController extends BaseController
             ->withHeader('Content-Type', 'application/json');
     }
 
-    public function refresh(Request $request, Response $response, array $args): Response
+    public function register(Request $request, Response $response, array $args): Response
     {
         $result = new Result();
+        $requestBody = $request->getParsedBody();
 
-        if ($this->validateToken($request)) {
+        if (isset($requestBody['username']) && isset($requestBody['password'])) {
 
-            $tokenRes = TokenGenerator::generateToken(
-                userId: $this->userId,
-                email: $this->email,
-                userName: $this->username,
-            );
+            $username = $requestBody['username'];
+            $password = $requestBody['password'];
+            $hashPassword = hash('sha256', $password);
 
-
-            $this->dataAccess->customQuery(
-                query: "delete from users_oauth_token where user_id = ?;",
-                params: [$this->userId]
-            );
-            $this->dataAccess->add(
-                table: 'users_oauth_token',
-                requestData: [
-                    'token' => $tokenRes['token'],
-                    'issued_at' => $tokenRes['iat'],
-                    'expires_at' => $tokenRes['exp'],
-                    'user_id' => "" . $this->userId,
+            // Check if user already exists
+            $existingUser = $this->dataAccess->get(
+                table: "users",
+                args: [
+                    "username" => $username
                 ],
+                single: true
             );
 
-            $result->setSuccessResult(['token' => $tokenRes['token']]);
+            if ($existingUser && count($existingUser) > 0) {
+                $result->setError('User already exists', 409);
+            } else {
+
+                // Create new user
+                $userId = $this->dataAccess->add(
+                    table: 'users',
+                    requestData: [
+                        'username' => $username,
+                        'password' => $hashPassword
+                    ]
+                );
+
+                if ($userId) {
+                    // Generate token for new user
+                    $tokenRes = TokenGenerator::generateToken(
+                        userId: $userId,
+                        userName: $username,
+                    );
+
+                    $this->dataAccess->add(
+                        table: 'users_oauth_tokens',
+                        requestData: [
+                            'token' => $tokenRes['token'],
+                            'issued_at' => $tokenRes['iat'],
+                            'expires_at' => $tokenRes['exp'],
+                            'user_id' => "" . $userId,
+                        ],
+                    );
+
+                    $result->setSuccessResult([
+                        'token' => $tokenRes['token'],
+                        'user' => [
+                            'id' => $userId,
+                            'username' => $username
+                        ]
+                    ]);
+                } else {
+                    $result->setError('Failed to create user', 500);
+                }
+
+            }
 
         } else {
-            $result->setUnauthorized();
+            $result->setInvalidParameters();
         }
 
         $response->getBody()->write(json_encode($result->data));

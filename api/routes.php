@@ -20,3 +20,8 @@ $app->post(
     pattern: BASE_ROUTE . "/login",
     callable: AuthController::class . ':login'
 );
+
+$app->post(
+    pattern: BASE_ROUTE . "/register",
+    callable: AuthController::class . ':register'
+);

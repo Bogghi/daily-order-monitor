@@ -19,7 +19,7 @@ class Result
         $this->data['status'] = self::KO;
         $this->data['message'] = 'Invalid parameters ';
         $this->statusCode = 400;
-        if($parameters) {
+        if ($parameters) {
             $this->data['message'] .= implode(',', $parameters);
         }
         return $this;
@@ -38,7 +38,7 @@ class Result
     {
         $this->data['status'] = self::OK;
 
-        if($array) {
+        if ($array) {
             $this->data = [...$this->data, ...$array];
         }
 
@@ -55,7 +55,16 @@ class Result
     {
         $this->data['status'] = self::KO;
         $this->statusCode = 500;
-        $this->data['message'] = 'An error occurred '.json_encode($data, JSON_UNESCAPED_UNICODE);
+        $this->data['message'] = 'An error occurred ' . json_encode($data, JSON_UNESCAPED_UNICODE);
+
+        return $this;
+    }
+
+    public function setError(mixed $data, int $errorCode): self
+    {
+        $this->data['status'] = self::KO;
+        $this->statusCode = $errorCode;
+        $this->data['message'] = 'An error occurred ' . json_encode($data, JSON_UNESCAPED_UNICODE);
 
         return $this;
     }

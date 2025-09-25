@@ -6,10 +6,10 @@ set -euo pipefail
 # 1) Check if the container is up
 # 2) If not, echo the container is not running
 # 3) Connect to the DB console
-# 4) Run the script
+# 4) Run the script./
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE_FILE="$SCRIPT_DIR/docker-compose-template.yml"
+COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
 DB_SERVICE="mariadb"
 SQL_FILE="$SCRIPT_DIR/db/table-definitions.sql"
 

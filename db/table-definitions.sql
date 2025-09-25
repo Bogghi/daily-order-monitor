@@ -23,7 +23,7 @@ create table iliad.order_items (
 create table iliad.users (
     user_id int primary key auto_increment,
     username varchar(50) not null unique,
-    password_hash varchar(255) not null,
+    password varchar(255) not null,
     created_at datetime default current_timestamp
 );
 create table iliad.users_oauth_tokens (
@@ -32,5 +32,5 @@ create table iliad.users_oauth_tokens (
     token varchar(255) not null unique,
     expires_at datetime not null,
     issued_at datetime default null,
-    foreign key (user_id) references users(user_id) on delete cascade
+    foreign key (user_id) references iliad.users(user_id) on delete cascade
 );
