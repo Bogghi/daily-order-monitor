@@ -1,5 +1,7 @@
 <?php
 
+use App\Controllers\AuthController;
+
 if (!isset($app)) {
     exit();
 }
@@ -12,4 +14,9 @@ $app->get(
         $response->getBody()->write("Welcome to the Iliad API v1");
         return $response;
     }
+);
+
+$app->post(
+    pattern: BASE_ROUTE . "/login",
+    callable: AuthController::class . ':login'
 );
