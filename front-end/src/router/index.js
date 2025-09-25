@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
+import ConsoleView from "@/views/ConsoleView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,11 @@ const router = createRouter({
       name: "home",
       redirect: "/login",
     },
+    {
+      path: "/console",
+      name: "console",
+      component: ConsoleView,
+    }
   ],
 });
 

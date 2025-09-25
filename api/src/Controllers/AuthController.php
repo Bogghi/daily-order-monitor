@@ -33,34 +33,30 @@ class AuthController extends BaseController
             $qRes = $this->dataAccess->get(
                 table: "users",
                 args: [
-                    "user_name" => $username,
+                    "username" => $username,
                     "password" => $hashPassword
                 ],
                 single: true,
                 fields: [
                     'user_id',
-                    'email',
-                    'user_name'
+                    'username'
                 ],
             );
 
             if ($qRes && count($qRes) > 0) {
 
                 $this->dataAccess->delete(
-                    table: 'users_oauth_token',
-                    args: [
-                        'user_id' => $qRes['user_id']
-                    ]
+                    table: 'users_oauth_tokens',
+                    args: ['user_id' => $qRes['user_id']]
                 );
 
                 $tokenRes = TokenGenerator::generateToken(
                     userId: $qRes['user_id'],
-                    email: $qRes['email'],
-                    userName: $qRes['user_name'],
+                    userName: $qRes['username'],
                 );
 
                 $this->dataAccess->add(
-                    table: 'users_oauth_token',
+                    table: 'users_oauth_tokens',
                     requestData: [
                         'token' => $tokenRes['token'],
                         'issued_at' => $tokenRes['iat'],

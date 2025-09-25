@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -72,11 +72,10 @@ const handleLogin = async () => {
   try {
     loading.value = true
     error.value = ''
-
+    
     await authStore.login(form)
 
-    // Redirect to dashboard or home after successful login
-    alert("login successful")
+    router.push('/console');
   } catch (err) {
     error.value = err.message || 'Login failed. Please try again.'
   } finally {
@@ -91,8 +90,7 @@ const handleRegister = async () => {
 
     await authStore.register(form)
 
-    // Redirect to dashboard or home after successful registration
-    alert("Registration successful")
+    router.push('/console');
   } catch (err) {
     error.value = err.message || 'Registration failed. Please try again.'
   } finally {
@@ -112,6 +110,12 @@ const toggleMode = () => {
   isRegisterMode.value = !isRegisterMode.value
   error.value = ''
 }
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    router.push('/console');
+  }
+})
 </script>
 
 <style scoped>

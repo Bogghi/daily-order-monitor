@@ -57,7 +57,7 @@ class ApiService {
   async login(credentials) {
     try {
       const loginData = {
-        username: credentials.email,
+        username: credentials.username,
         password: credentials.password
       };
 
@@ -80,7 +80,6 @@ class ApiService {
     try {
       const registerData = {
         username: credentials.username,
-        email: credentials.email,
         password: credentials.password
       };
 
