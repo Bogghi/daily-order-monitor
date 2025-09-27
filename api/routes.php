@@ -30,6 +30,22 @@ $app->get(
     pattern: BASE_ROUTE . "/orders",
     callable: OrdersController::class . ':listOrders'
 );
+$app->post(
+    pattern: BASE_ROUTE . "/orders/add",
+    callable: OrdersController::class . ':addOrder'
+);
+$app->post(
+    pattern: BASE_ROUTE . "/orders/{order_id}/delete",
+    callable: OrdersController::class . ':deleteOrder'
+);
+$app->post(
+    pattern: BASE_ROUTE . "/orders/{order_id}/update",
+    callable: OrdersController::class . ':updateOrder'
+);
+$app->post(
+    pattern: BASE_ROUTE . "/orders-items/update",
+    callable: OrdersController::class . ':updateOrderItems'
+);
 $app->get(
     pattern: BASE_ROUTE . "/products",
     callable: ProductsController::class . ':listProducts'

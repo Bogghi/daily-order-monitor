@@ -119,6 +119,37 @@ class ApiService {
     return response;
   }
 
+  async addOrder(orderData) {
+    const response = await this.request('/orders/add', {
+      method: 'POST',
+      body: JSON.stringify(orderData),
+    });
+    return response;
+  }
+
+  async deleteOrder(orderId) {
+    const response = await this.request(`/orders/${orderId}/delete`, {
+      method: 'POST',
+    });
+    return response;
+  }
+
+  async updateOrder(orderId, orderData) {
+    const response = await this.request(`/orders/${orderId}/update`, {
+      method: 'POST',
+      body: JSON.stringify(orderData),
+    });
+    return response;
+  }
+
+  async updateOrderItems(orderItemData) {
+    const response = await this.request('/orders-items/update', {
+      method: 'POST',
+      body: JSON.stringify(orderItemData),
+    });
+    return response;
+  }
+
   
 }
 

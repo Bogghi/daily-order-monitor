@@ -25,5 +25,56 @@ export const useOrdersStore = defineStore('orders', () => {
         return orders.value;
     };
 
-    return { orders, fetchOrders };
+    const addOrder = async (orderData) => {
+        const response = await apiService.addOrder(orderData);
+
+        if (response.order_id) {
+            // Refresh the orders list after adding
+            await fetchOrders();
+        }
+
+        return response;
+    };
+
+    const deleteOrder = async (orderId) => {
+        const response = await apiService.deleteOrder(orderId);
+
+        if (response.message) {
+            // Remove the order from local state
+            orders.value = orders.value.filter(order => order.order_id !== orderId);
+        }
+
+        return response;
+    };
+
+    const updateOrder = async (orderId, orderData) => {
+        const response = await apiService.updateOrder(orderId, orderData);
+
+        if (response.message) {
+            // Refresh the orders list after updating
+            await fetchOrders();
+        }
+
+        return response;
+    };
+
+    const updateOrderItems = async (orderItemData) => {
+        const response = await apiService.updateOrderItems(orderItemData);
+
+        if (response.message) {
+            // Refresh the orders list after updating items
+            await fetchOrders();
+        }
+
+        return response;
+    };
+
+    return {
+        orders,
+        fetchOrders,
+        addOrder,
+        deleteOrder,
+        updateOrder,
+        updateOrderItems
+    };
 });
