@@ -4,6 +4,7 @@ use Psr\Container\ContainerInterface;
 
 use App\Controllers\OrdersController;
 use App\Controllers\AuthController;
+use App\Controllers\ProductsController;
 
 if (!isset($container) || !$container instanceof ContainerInterface) {
     die("Error: Dependency container not initialized. This file should be included by index.php.");
@@ -18,6 +19,12 @@ $container->set(
 $container->set(
     name: OrdersController::class,
     value: fn(ContainerInterface $c) => new OrdersController(
+        dataAccess: $c->get(App\Utility\_DataAccess::class)
+    )
+);
+$container->set(
+    name: ProductsController::class,
+    value: fn(ContainerInterface $c) => new ProductsController(
         dataAccess: $c->get(App\Utility\_DataAccess::class)
     )
 );

@@ -97,6 +97,28 @@ class ApiService {
     return response;
   }
 
+  async fetchProducts() {
+    const response = await this.request('/products', {
+      method: 'GET',
+    });
+    return response;
+  }
+
+  async addProduct(productData) {
+    const response = await this.request('/products/add', {
+      method: 'POST',
+      body: JSON.stringify(productData),
+    });
+    return response;
+  }
+
+  async deleteProduct(productId) {
+    const response = await this.request(`/products/${productId}/delete`, {
+      method: 'POST',
+    });
+    return response;
+  }
+
   
 }
 

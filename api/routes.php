@@ -2,6 +2,7 @@
 
 use App\Controllers\AuthController;
 use App\Controllers\OrdersController;
+use App\Controllers\ProductsController;
 
 if (!isset($app)) {
     exit();
@@ -28,4 +29,16 @@ $app->post(
 $app->get(
     pattern: BASE_ROUTE . "/orders",
     callable: OrdersController::class . ':listOrders'
+);
+$app->get(
+    pattern: BASE_ROUTE . "/products",
+    callable: ProductsController::class . ':listProducts'
+);
+$app->post(
+    pattern: BASE_ROUTE . "/products/add",
+    callable: ProductsController::class . ':addProduct'
+);
+$app->post(
+    pattern: BASE_ROUTE . "/products/{product_id}/delete",
+    callable: ProductsController::class . ':deleteProduct'
 );
