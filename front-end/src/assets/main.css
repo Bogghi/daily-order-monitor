@@ -8,11 +8,13 @@
     .container {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
+        overflow-x: scroll;
         width: var(--container-width);
         height: 100vh;
     }
 
-    h1 {
+    h1, h2 {
         padding: 20px 0;
     }
 
