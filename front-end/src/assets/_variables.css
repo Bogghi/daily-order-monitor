@@ -1,0 +1,8 @@
+:root {
+    --primary-color: #df0000;
+    --secondary-color: white;
+
+    --primary-hover-color: #b30000;
+
+    --container-width: 900px;
+}

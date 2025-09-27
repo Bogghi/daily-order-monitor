@@ -1,0 +1,13 @@
+.main {
+    display: flex;
+    justify-content: center;
+    width: calc(100vw - 80px);
+    height: 100vh;
+    overflow: auto;
+
+    .container {
+        display: flex;
+        width: var(--container-width);
+        height: 100vh;
+    }
+}

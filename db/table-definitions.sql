@@ -2,14 +2,14 @@ drop schema if exists iliad;
 create schema iliad;
 create table iliad.orders (
     order_id int auto_increment primary key,
-    customer_name varchar(255) not null,
+    name varchar(255) not null,
+    description text default null,
     order_date datetime default current_timestamp,
     value int not null
 );
 create table iliad.products (
     product_id int auto_increment primary key,
     name varchar(255) not null,
-    description text,
     price decimal(10, 2) not null
 );
 create table iliad.order_items (

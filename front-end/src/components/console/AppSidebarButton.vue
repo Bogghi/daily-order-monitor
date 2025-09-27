@@ -40,7 +40,7 @@ const icon = computed(() => props.clicked ? props.clickedIcon : props.icon);
 
     &:hover {
         cursor: pointer;
-        background-color: #b30000;
+        background-color: var(--primary-hover-color);
     }
 }
 </style>

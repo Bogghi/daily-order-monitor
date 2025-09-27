@@ -98,7 +98,7 @@ onMounted(() => {
 
   .side-bar {
     width: 80px;
-    background-color: #df0000;
+    background-color: var(--primary-color);
     color: white;
 
     .logo {
