@@ -7,7 +7,10 @@
                     <template #header>
                         <div class="table-header">
                             <IconField>
-                                <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                                <InputIcon>
+                                    <Icon icon="solar:magnifer-linear" />
+                                </InputIcon>
+                                <InputText v-model="filters['global'].value" placeholder="Cerca ordini..." />
                             </IconField>
                             <Button variant="text" @click="openBottomSheet">
                                 <Icon icon="solar:add-square-linear" height="25" />
@@ -70,7 +73,7 @@
 <script setup>
 import BottomSheet from '@douxcode/vue-spring-bottom-sheet'
 import '@douxcode/vue-spring-bottom-sheet/dist/style.css'
-import { DataTable, Column, InputText, Button, IconField } from 'primevue';
+import { DataTable, Column, InputText, Button, IconField, InputIcon } from 'primevue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { onMounted, ref, computed, reactive } from 'vue';
 import { useOrdersStore } from '@/stores/orders';
@@ -78,9 +81,9 @@ import { useProductsStore } from '@/stores/products';
 import { Icon } from "@iconify/vue";
 import { formatPrice } from '@/utility/utility';   
 
-let filters = {
+const filters = ref({
     'global': { value: null, matchMode: FilterMatchMode.CONTAINS }
-};
+});
 
 const ordersStore = useOrdersStore();
 const productsStore = useProductsStore();
