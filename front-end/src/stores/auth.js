@@ -9,32 +9,24 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
 
   const login = async (credentials) => {
-    try {
-      const response = await apiService.login(credentials)
+    const response = await apiService.login(credentials)
 
-      token.value = response.token
-      user.value = response.user || { email: credentials.email }
+    token.value = response.token
+    user.value = response.user || { email: credentials.email }
 
-      return response
-    } catch (error) {
-      throw error
-    }
+    return response
   }
 
   const register = async (credentials) => {
-    try {
-      const response = await apiService.register(credentials)
+    const response = await apiService.register(credentials)
 
-      token.value = response.token
-      user.value = response.user || {
-        username: credentials.username,
-        email: credentials.email
-      }
-
-      return response
-    } catch (error) {
-      throw error
+    token.value = response.token
+    user.value = response.user || {
+      username: credentials.username,
+      email: credentials.email
     }
+
+    return response
   }
 
   const logout = () => {

@@ -40,67 +40,64 @@ class ApiService {
       headers,
     };
 
-    try {
-      const response = await fetch(url, config);
-      const data = await response.json();
+    const response = await fetch(url, config);
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Request failed');
-      }
-
-      return data;
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      throw new Error(data.message || 'Request failed');
     }
+
+    return data;
   }
 
   async login(credentials) {
-    try {
-      const loginData = {
-        username: credentials.username,
-        password: credentials.password
-      };
+    const loginData = {
+      username: credentials.username,
+      password: credentials.password
+    };
 
-      const response = await this.request('/login', {
-        method: 'POST',
-        body: JSON.stringify(loginData),
-      });
+    const response = await this.request('/login', {
+      method: 'POST',
+      body: JSON.stringify(loginData),
+    });
 
-      if (response.token) {
-        this.setToken(response.token);
-      }
-
-      return response;
-    } catch (error) {
-      throw error;
+    if (response.token) {
+      this.setToken(response.token);
     }
+
+    return response;
   }
 
   async register(credentials) {
-    try {
-      const registerData = {
-        username: credentials.username,
-        password: credentials.password
-      };
+    const registerData = {
+      username: credentials.username,
+      password: credentials.password
+    };
 
-      const response = await this.request('/register', {
-        method: 'POST',
-        body: JSON.stringify(registerData),
-      });
+    const response = await this.request('/register', {
+      method: 'POST',
+      body: JSON.stringify(registerData),
+    });
 
-      if (response.token) {
-        this.setToken(response.token);
-      }
-
-      return response;
-    } catch (error) {
-      throw error;
+    if (response.token) {
+      this.setToken(response.token);
     }
+
+    return response;
   }
 
   logout() {
     this.setToken(null);
   }
+
+  async fetchOrders() {
+    const response = await this.request('/orders', {
+      method: 'GET',
+    });
+    return response;
+  }
+
+  
 }
 
 export default ApiService.getInstance();

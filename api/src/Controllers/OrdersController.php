@@ -20,6 +20,9 @@ class OrdersController extends BaseController
 
         if ($this->validateToken($request)) {
 
+            $orders = $this->dataAccess->get(table: "iliad.orders");
+            $result->setSuccessResult(['orders' => $orders]);
+
         } else {
             $result->setUnauthorized();
         }
