@@ -42,10 +42,6 @@ $app->post(
     pattern: BASE_ROUTE . "/orders/{order_id}/update",
     callable: OrdersController::class . ':updateOrder'
 );
-$app->post(
-    pattern: BASE_ROUTE . "/orders-items/update",
-    callable: OrdersController::class . ':updateOrderItems'
-);
 $app->get(
     pattern: BASE_ROUTE . "/products",
     callable: ProductsController::class . ':listProducts'

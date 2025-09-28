@@ -3,7 +3,7 @@
         <div class="container">
             <h1>Lista ordini</h1>
             <div class="table">
-                <DataTable :value="ordersStore.orders" v-model:filters="filters" showGridlines scrollable>
+                <DataTable :value="ordersStore.orders" v-model:filters="filters" showGridlines scrollable selectionMode="single" @row-click="onRowClick">
                     <template #header>
                         <div class="table-header">
                             <IconField>
@@ -26,7 +26,7 @@
             </div>
 
             <BottomSheet ref="bottomSheet">
-                <h2 style="margin-bottom: 10px;">Nuovo ordine</h2>
+                <h2 style="margin-bottom: 10px;">{{ isEditMode ? 'Modifica ordine' : 'Nuovo ordine' }}</h2>
                 <InputText type="text" style="margin-bottom: 10px;" v-model="orderForm.name" variant="filled" placeholder="Nome ordine" />
                 <InputText type="text" style="margin-bottom: 15px;" v-model="orderForm.description" variant="filled" placeholder="Descrizione" />
 
@@ -63,7 +63,7 @@
                     :loading="savingOrder"
                     :disabled="orderForm.order_items.length === 0"
                     style="width: 100%;">
-                    Salva ordine
+                    {{ isEditMode ? 'Aggiorna ordine' : 'Salva ordine' }}
                 </Button>
             </BottomSheet>
         </div>
@@ -89,6 +89,8 @@ const ordersStore = useOrdersStore();
 const productsStore = useProductsStore();
 const bottomSheet = ref(null);
 const savingOrder = ref(false);
+const isEditMode = ref(false);
+const editingOrderId = ref(null);
 const orderForm = reactive({
     name: '',
     description: '',
@@ -103,9 +105,34 @@ const orderTotal = computed(() => {
 });
 
 const openBottomSheet = () => {
+    resetForm();
+    isEditMode.value = false;
+    editingOrderId.value = null;
     if (bottomSheet.value) {
         bottomSheet.value.open();
     }
+};
+
+const onRowClick = (event) => {
+    const order = event.data;
+    populateFormWithOrder(order);
+    if (bottomSheet.value) {
+        bottomSheet.value.open();
+    }
+};
+
+const populateFormWithOrder = (order) => {
+    isEditMode.value = true;
+    editingOrderId.value = order.order_id;
+    orderForm.name = order.name;
+    orderForm.description = order.description;
+    orderForm.order_items = order.order_items || [];
+};
+
+const resetForm = () => {
+    orderForm.name = '';
+    orderForm.description = '';
+    orderForm.order_items = [];
 };
 
 const addProductToOrder = (product) => {
@@ -150,12 +177,18 @@ const saveOrder = async () => {
             order_items: orderForm.order_items
         };
 
-        await ordersStore.addOrder(orderData);
+        if (isEditMode.value && editingOrderId.value) {
+            // Update existing order
+            await ordersStore.updateOrder(editingOrderId.value, orderData);
+        } else {
+            // Create new order
+            await ordersStore.addOrder(orderData);
+        }
 
         // Reset form and close bottom sheet
-        orderForm.name = '';
-        orderForm.description = '';
-        orderForm.order_items = [];
+        resetForm();
+        isEditMode.value = false;
+        editingOrderId.value = null;
 
         if (bottomSheet.value) {
             bottomSheet.value.close();

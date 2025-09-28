@@ -7,7 +7,7 @@ class _DataAccess
 {
     protected ?PDO $pdo;
 
-    public bool $debug = false;
+    public bool $debug = true;
 
     public function __construct(?PDO $pdo = null)
     {

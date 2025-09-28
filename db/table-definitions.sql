@@ -10,7 +10,8 @@ create table iliad.orders (
 create table iliad.products (
     product_id int auto_increment primary key,
     name varchar(255) not null,
-    price int not null
+    price int not null,
+    deleted tinyint default 0
 );
 create table iliad.order_items (
     order_item_id int auto_increment primary key,

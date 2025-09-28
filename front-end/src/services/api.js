@@ -142,13 +142,6 @@ class ApiService {
     return response;
   }
 
-  async updateOrderItems(orderItemData) {
-    const response = await this.request('/orders-items/update', {
-      method: 'POST',
-      body: JSON.stringify(orderItemData),
-    });
-    return response;
-  }
 
   
 }

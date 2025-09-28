@@ -21,6 +21,16 @@ class OrdersController extends BaseController
         if ($this->validateToken($request)) {
 
             $orders = $this->dataAccess->get(table: "iliad.orders");
+
+            // Fetch order items for each order
+            foreach ($orders as &$order) {
+                $orderItems = $this->dataAccess->get(
+                    table: "iliad.order_items",
+                    args: ["order_id" => $order['order_id']]
+                );
+                $order['order_items'] = $orderItems;
+            }
+
             $result->setSuccessResult(['orders' => $orders]);
 
         } else {
@@ -30,6 +40,7 @@ class OrdersController extends BaseController
         $response->getBody()->write(json_encode($result));
         return $response->withHeader('Content-Type', 'application/json');
     }
+
 
     public function addOrder($request, $response, $args)
     {
@@ -128,58 +139,6 @@ class OrdersController extends BaseController
             ->withHeader('Content-Type', 'application/json');
     }
 
-    public function updateOrderItems($request, $response, $args)
-    {
-        $result = new Result();
-        $requestBody = $request->getParsedBody();
-
-        if ($this->validateToken($request)) {
-            if (isset($requestBody['order_item_id']) && isset($requestBody['quantity'])) {
-                $orderItemId = $requestBody['order_item_id'];
-                $quantity = $requestBody['quantity'];
-
-                if ($quantity == 0) {
-                    // Delete the order item if quantity is zero
-                    $deleted = $this->dataAccess->delete(
-                        table: 'iliad.order_items',
-                        args: ['order_item_id' => $orderItemId]
-                    );
-
-                    if ($deleted) {
-                        // Update order value by recalculating from remaining items
-                        $this->recalculateOrderValue($requestBody['order_id']);
-                        $result->setSuccessResult(['message' => 'Order item deleted and order value updated']);
-                    } else {
-                        $result->setError('Order item not found', 404);
-                    }
-                } else {
-                    // Update the quantity
-                    $updated = $this->dataAccess->update(
-                        table: 'iliad.order_items',
-                        args: ['order_item_id' => $orderItemId],
-                        requestData: ['quantity' => $quantity]
-                    );
-
-                    if ($updated) {
-                        // Update order value by recalculating from items
-                        $this->recalculateOrderValue($requestBody['order_id']);
-                        $result->setSuccessResult(['message' => 'Order item updated and order value recalculated']);
-                    } else {
-                        $result->setError('Order item not found', 404);
-                    }
-                }
-            } else {
-                $result->setInvalidParameters();
-            }
-        } else {
-            $result->setUnauthorized();
-        }
-
-        $response->getBody()->write(json_encode($result->data));
-        return $response
-            ->withStatus($result->statusCode)
-            ->withHeader('Content-Type', 'application/json');
-    }
 
     public function updateOrder($request, $response, $args)
     {
@@ -191,7 +150,7 @@ class OrdersController extends BaseController
                 $orderId = $args['order_id'];
                 $updateData = [];
 
-                // Only allow updating name and description, not value
+                // Update order metadata (name and description)
                 if (isset($requestBody['name'])) {
                     $updateData['name'] = $requestBody['name'];
                 }
@@ -206,14 +165,44 @@ class OrdersController extends BaseController
                         requestData: $updateData
                     );
 
-                    if ($updated) {
-                        $result->setSuccessResult(['message' => 'Order updated successfully']);
-                    } else {
+                    if (!$updated) {
                         $result->setError('Order not found or could not be updated', 404);
+                        $response->getBody()->write(json_encode($result->data));
+                        return $response
+                            ->withStatus($result->statusCode)
+                            ->withHeader('Content-Type', 'application/json');
                     }
-                } else {
-                    $result->setError('No valid fields to update', 400);
                 }
+
+                // Handle order items update if provided
+                if (isset($requestBody['order_items'])) {
+                    $orderItems = $requestBody['order_items'];
+
+                    // Delete all existing order items for this order
+                    $this->dataAccess->delete(
+                        table: 'iliad.order_items',
+                        args: ['order_id' => $orderId]
+                    );
+
+                    // Add new order items
+                    foreach ($orderItems as $item) {
+                        if (isset($item['product_id']) && isset($item['quantity']) && $item['quantity'] > 0) {
+                            $this->dataAccess->add(
+                                table: 'iliad.order_items',
+                                requestData: [
+                                    'order_id' => $orderId,
+                                    'product_id' => $item['product_id'],
+                                    'quantity' => $item['quantity']
+                                ]
+                            );
+                        }
+                    }
+
+                    // Recalculate order value based on new items
+                    $this->recalculateOrderValue($orderId);
+                }
+
+                $result->setSuccessResult(['message' => 'Order updated successfully']);
             } else {
                 $result->setInvalidParameters();
             }
@@ -231,10 +220,10 @@ class OrdersController extends BaseController
     {
         // Get all order items with product prices
         $orderItems = $this->dataAccess->get(
-            table: "iliad.order_items oi",
-            join: ["iliad.products p" => "product_id"],
-            args: ["oi.order_id" => $orderId],
-            fields: ["oi.quantity", "p.price"]
+            table: "iliad.order_items",
+            join: ["iliad.products" => "product_id"],
+            args: ["iliad.order_items.order_id" => $orderId],
+            fields: ["iliad.order_items.quantity", "iliad.products.price"]
         );
 
         $totalValue = 0;

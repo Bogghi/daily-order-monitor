@@ -21,7 +21,7 @@ class ProductsController extends BaseController
         $result = new Result();
 
         if ($this->validateToken($request)) {
-            $products = $this->dataAccess->get(table: "iliad.products");
+            $products = $this->dataAccess->get(table: "iliad.products", args: ['deleted' => 0]);
             $result->setSuccessResult(['products' => $products]);
         } else {
             $result->setUnauthorized();
@@ -80,8 +80,9 @@ class ProductsController extends BaseController
             if (isset($args['product_id'])) {
                 $productId = $args['product_id'];
 
-                $deleted = $this->dataAccess->delete(
+                $deleted = $this->dataAccess->update(
                     table: 'iliad.products',
+                    requestData: ['deleted' => 1],
                     args: ['product_id' => $productId]
                 );
 

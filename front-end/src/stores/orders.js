@@ -17,6 +17,8 @@ export const useOrdersStore = defineStore('orders', () => {
                     description: order.description,
                     date: order.order_date,
                     value: formatPrice(order.value),
+                    value_raw: order.value,
+                    order_items: order.order_items || []
                 }
             });
             orders.value = normOrders;
@@ -58,23 +60,11 @@ export const useOrdersStore = defineStore('orders', () => {
         return response;
     };
 
-    const updateOrderItems = async (orderItemData) => {
-        const response = await apiService.updateOrderItems(orderItemData);
-
-        if (response.message) {
-            // Refresh the orders list after updating items
-            await fetchOrders();
-        }
-
-        return response;
-    };
-
     return {
         orders,
         fetchOrders,
         addOrder,
         deleteOrder,
-        updateOrder,
-        updateOrderItems
+        updateOrder
     };
 });
