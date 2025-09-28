@@ -106,6 +106,7 @@ The application follows a microservices architecture with clear separation of co
 
    ```bash
    chmod +x install.sh
+   chmod +x init-db.sh
    ./install.sh
    ```
 
