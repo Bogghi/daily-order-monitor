@@ -25,10 +25,10 @@ services:
   mariadb:
     image: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: local
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE: db_name
+      MYSQL_PASSWORD: local
+      MYSQL_DATABASE: iliad 
     networks:
       - internal
     ports:
