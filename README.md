@@ -34,6 +34,7 @@ The application follows a microservices architecture with clear separation of co
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Vue.js 3** - Progressive JavaScript framework
 - **PrimeVue** - UI component library
 - **Pinia** - State management
@@ -42,6 +43,7 @@ The application follows a microservices architecture with clear separation of co
 - **Iconify** - Icon system
 
 ### Backend
+
 - **PHP 8+** - Server-side language
 - **Slim Framework 4** - Micro framework for APIs
 - **Composer** - Dependency manager
@@ -49,11 +51,13 @@ The application follows a microservices architecture with clear separation of co
 - **SHA-256** - Password hashing
 
 ### Database
+
 - **MariaDB** - Relational database
 - **Foreign Keys** - Data integrity
 - **Soft Deletes** - Data preservation
 
 ### Infrastructure
+
 - **Docker** - Containerization
 - **Nginx** - Web server and reverse proxy
 - **PHP-FPM** - FastCGI Process Manager
@@ -85,24 +89,28 @@ The application follows a microservices architecture with clear separation of co
 ## 🚀 Quick Setup
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - Git
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd iliad-test
    ```
 
 2. **Run the installation script**
+
    ```bash
    chmod +x install.sh
    ./install.sh
    ```
 
    This script will:
+
    - Install PHP dependencies with Composer
    - Set up environment configuration
    - Install Node.js dependencies
@@ -118,6 +126,7 @@ The application follows a microservices architecture with clear separation of co
 If you prefer to set up manually:
 
 ### Backend Setup
+
 ```bash
 cd api
 composer install
@@ -126,6 +135,7 @@ cp env-example.php env.php
 ```
 
 ### Frontend Setup
+
 ```bash
 cd front-end
 npm install
@@ -133,12 +143,14 @@ npm run build
 ```
 
 ### Docker Setup
+
 ```bash
 cp docker-compose-template.yml docker-compose.yml
 docker compose up -d --build
 ```
 
 ### Database Initialization
+
 ```bash
 ./init-db.sh
 ```
@@ -146,11 +158,13 @@ docker compose up -d --build
 ## 🎯 Usage Guide
 
 ### Authentication
+
 1. **Registration**: Create a new account at `/register`
 2. **Login**: Access the system at `/login`
 3. **Auto-login**: JWT tokens are stored locally for seamless experience
 
 ### Product Management
+
 - View all products in the system
 - Add new products with name and price
 - Delete products (soft delete)
@@ -158,6 +172,7 @@ docker compose up -d --build
 ### Order Management
 
 #### Creating Orders
+
 1. Click the "+" button in the orders table header
 2. Fill in order name and description
 3. Select products by clicking on them
@@ -166,12 +181,14 @@ docker compose up -d --build
 6. Click "Salva ordine" to create
 
 #### Editing Orders
+
 1. Click on any order row in the table
 2. Modify order details and products
 3. Click "Aggiorna ordine" to save changes
 4. Click "Elimina ordine" to delete (soft delete)
 
 #### Filtering Orders
+
 - **Global Search**: Use the search box to filter by any field
 - **Date Filter**: Use the date picker to filter by specific dates
 - **Clear Filters**: Clear the date picker to show all orders
@@ -179,6 +196,7 @@ docker compose up -d --build
 ### Features
 
 #### Order Features
+
 - ✅ Create new orders with multiple products
 - ✅ Edit existing orders (name, description, products)
 - ✅ Delete orders (soft delete - preserves data)
@@ -186,11 +204,13 @@ docker compose up -d --build
 - ✅ Order items management with quantities
 
 #### Search & Filter
+
 - ✅ Global text search across all order fields
 - ✅ Date-specific filtering with calendar picker
 - ✅ Clear filters functionality
 
 #### UI/UX Features
+
 - ✅ Responsive design
 - ✅ Loading states and error handling
 - ✅ Modal-based editing interface
@@ -200,6 +220,7 @@ docker compose up -d --build
 ## 🔧 Development
 
 ### Local Development
+
 ```bash
 # Frontend development server
 cd front-end
@@ -210,24 +231,10 @@ npm run dev
 ```
 
 ### Building for Production
+
 ```bash
 cd front-end
 npm run build
-```
-
-### Environment Variables
-
-#### Backend (env.php)
-```php
-<?php
-return [
-    'database' => [
-        'host' => 'mariadb',
-        'name' => 'iliad',
-        'user' => 'user',
-        'pass' => 'local'
-    ]
-];
 ```
 
 ## 🐳 Docker Services
@@ -239,6 +246,7 @@ The application runs on the following Docker services:
 - **mariadb**: Database server (port 3306)
 
 ### Service Management
+
 ```bash
 # Start services
 docker compose up -d
@@ -264,16 +272,19 @@ docker compose restart [service-name]
 ## 📱 API Endpoints
 
 ### Authentication
+
 - `POST /API/v1/login` - User login
 - `POST /API/v1/register` - User registration
 
 ### Orders
+
 - `GET /API/v1/orders` - List all orders (non-deleted)
 - `POST /API/v1/orders/add` - Create new order
 - `POST /API/v1/orders/{id}/update` - Update order
 - `POST /API/v1/orders/{id}/delete` - Delete order (soft)
 
 ### Products
+
 - `GET /API/v1/products` - List all products
 - `POST /API/v1/products/add` - Create new product
 - `POST /API/v1/products/{id}/delete` - Delete product
@@ -293,6 +304,7 @@ The application uses PrimeVue components for a consistent and professional inter
 ### Common Issues
 
 **Database Connection Error**
+
 ```bash
 # Ensure MariaDB container is running
 docker compose ps
@@ -303,36 +315,3 @@ docker compose logs mariadb
 # Restart database service
 docker compose restart mariadb
 ```
-
-**Frontend Build Issues**
-```bash
-# Clear node modules and reinstall
-cd front-end
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
-
-**Port Conflicts**
-```bash
-# Check if ports are in use
-lsof -i :9000
-lsof -i :3306
-
-# Modify docker-compose.yml ports if needed
-```
-
-## 📄 License
-
-This project is for educational and demonstration purposes.
-
-## 🤝 Contributing
-
-This is a demonstration project. For production use, consider:
-
-- Adding comprehensive error handling
-- Implementing data validation
-- Adding unit and integration tests
-- Setting up CI/CD pipelines
-- Adding monitoring and logging
-- Implementing backup strategies
