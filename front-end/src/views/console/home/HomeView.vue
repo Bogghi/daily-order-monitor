@@ -3,15 +3,25 @@
         <div class="container">
             <h1>Lista ordini</h1>
             <div class="table">
-                <DataTable :value="ordersStore.orders" v-model:filters="filters" showGridlines scrollable selectionMode="single" @row-click="onRowClick">
+                <DataTable :value="filteredOrders" v-model:filters="filters" showGridlines scrollable selectionMode="single" @row-click="onRowClick">
                     <template #header>
                         <div class="table-header">
-                            <IconField>
-                                <InputIcon>
-                                    <Icon icon="solar:magnifer-linear" />
-                                </InputIcon>
-                                <InputText v-model="filters['global'].value" placeholder="Cerca ordini..." />
-                            </IconField>
+                            <div class="filter-section">
+                                <IconField>
+                                    <InputIcon>
+                                        <Icon icon="solar:magnifer-linear" />
+                                    </InputIcon>
+                                    <InputText v-model="filters['global'].value" placeholder="Cerca ordini..." />
+                                </IconField>
+                                <Calendar
+                                    v-model="dateFilter"
+                                    placeholder="Filtra per data"
+                                    dateFormat="dd/mm/yy"
+                                    showButtonBar
+                                    @clear-click="clearDateFilter"
+                                    style="margin-left: 10px;"
+                                />
+                            </div>
                             <Button variant="text" @click="openBottomSheet">
                                 <Icon icon="solar:add-square-linear" height="25" />
                             </Button>
@@ -73,7 +83,7 @@
 <script setup>
 import BottomSheet from '@douxcode/vue-spring-bottom-sheet'
 import '@douxcode/vue-spring-bottom-sheet/dist/style.css'
-import { DataTable, Column, InputText, Button, IconField, InputIcon } from 'primevue';
+import { DataTable, Column, InputText, Button, IconField, InputIcon, Calendar } from 'primevue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { onMounted, ref, computed, reactive } from 'vue';
 import { useOrdersStore } from '@/stores/orders';
@@ -84,6 +94,8 @@ import { formatPrice } from '@/utility/utility';
 const filters = ref({
     'global': { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
+
+const dateFilter = ref(null);
 
 const ordersStore = useOrdersStore();
 const productsStore = useProductsStore();
@@ -103,6 +115,34 @@ const orderTotal = computed(() => {
         return total + (product ? product.price_raw * item.quantity : 0);
     }, 0);
 });
+
+const filteredOrders = computed(() => {
+    let orders = ordersStore.orders;
+
+    if (dateFilter.value) {
+        // Get the selected date as YYYY-MM-DD string
+        const selectedDate = new Date(dateFilter.value);
+        const selectedDateString = selectedDate.getFullYear() + '-' +
+            String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' +
+            String(selectedDate.getDate()).padStart(2, '0');
+
+        orders = orders.filter(order => {
+            // Parse order date and extract just the date part
+            const orderDate = new Date(order.date);
+            const orderDateString = orderDate.getFullYear() + '-' +
+                String(orderDate.getMonth() + 1).padStart(2, '0') + '-' +
+                String(orderDate.getDate()).padStart(2, '0');
+
+            return orderDateString === selectedDateString;
+        });
+    }
+
+    return orders;
+});
+
+const clearDateFilter = () => {
+    dateFilter.value = null;
+};
 
 const openBottomSheet = () => {
     resetForm();
@@ -209,6 +249,17 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-section {
+    display: flex;
+    align-items: center;
+}
+
 .product-list {
     border: 1px solid #ddd;
     border-radius: 4px;
