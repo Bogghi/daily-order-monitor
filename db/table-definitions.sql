@@ -5,7 +5,8 @@ create table iliad.orders (
     name varchar(255) not null,
     description text default null,
     order_date datetime default current_timestamp,
-    value int not null
+    value int not null,
+    deleted tinyint default 0
 );
 create table iliad.products (
     product_id int auto_increment primary key,

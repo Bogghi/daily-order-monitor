@@ -68,13 +68,23 @@
                     <strong>Totale ordine: {{ formatPrice(orderTotal) }}</strong>
                 </div>
 
-                <Button
-                    @click="saveOrder"
-                    :loading="savingOrder"
-                    :disabled="orderForm.order_items.length === 0"
-                    style="width: 100%;">
-                    {{ isEditMode ? 'Aggiorna ordine' : 'Salva ordine' }}
-                </Button>
+                <div style="display: flex; gap: 10px;">
+                    <Button
+                        v-if="isEditMode"
+                        @click="deleteOrder"
+                        severity="danger"
+                        :loading="deletingOrder"
+                        style="flex: 1;">
+                        Elimina ordine
+                    </Button>
+                    <Button
+                        @click="saveOrder"
+                        :loading="savingOrder"
+                        :disabled="orderForm.order_items.length === 0"
+                        style="flex: 1;">
+                        {{ isEditMode ? 'Aggiorna ordine' : 'Salva ordine' }}
+                    </Button>
+                </div>
             </BottomSheet>
         </div>
     </div>
@@ -101,6 +111,7 @@ const ordersStore = useOrdersStore();
 const productsStore = useProductsStore();
 const bottomSheet = ref(null);
 const savingOrder = ref(false);
+const deletingOrder = ref(false);
 const isEditMode = ref(false);
 const editingOrderId = ref(null);
 const orderForm = reactive({
@@ -142,6 +153,29 @@ const filteredOrders = computed(() => {
 
 const clearDateFilter = () => {
     dateFilter.value = null;
+};
+
+const deleteOrder = async () => {
+    if (!isEditMode.value || !editingOrderId.value) return;
+
+    try {
+        deletingOrder.value = true;
+
+        await ordersStore.deleteOrder(editingOrderId.value);
+
+        // Reset form and close bottom sheet
+        resetForm();
+        isEditMode.value = false;
+        editingOrderId.value = null;
+
+        if (bottomSheet.value) {
+            bottomSheet.value.close();
+        }
+    } catch (error) {
+        console.error('Error deleting order:', error);
+    } finally {
+        deletingOrder.value = false;
+    }
 };
 
 const openBottomSheet = () => {

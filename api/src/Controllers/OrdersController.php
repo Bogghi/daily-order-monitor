@@ -20,7 +20,11 @@ class OrdersController extends BaseController
 
         if ($this->validateToken($request)) {
 
-            $orders = $this->dataAccess->get(table: "iliad.orders");
+            // Only get non-deleted orders
+            $orders = $this->dataAccess->get(
+                table: "iliad.orders",
+                args: ["deleted" => 0]
+            );
 
             // Fetch order items for each order
             foreach ($orders as &$order) {
@@ -109,16 +113,11 @@ class OrdersController extends BaseController
             if (isset($args['order_id'])) {
                 $orderId = $args['order_id'];
 
-                // Delete order items first (foreign key constraint)
-                $this->dataAccess->delete(
-                    table: 'iliad.order_items',
-                    args: ['order_id' => $orderId]
-                );
-
-                // Delete the order
-                $deleted = $this->dataAccess->delete(
+                // Soft delete: set deleted flag to 1
+                $deleted = $this->dataAccess->update(
                     table: 'iliad.orders',
-                    args: ['order_id' => $orderId]
+                    args: ['order_id' => $orderId],
+                    requestData: ['deleted' => 1]
                 );
 
                 if ($deleted) {
