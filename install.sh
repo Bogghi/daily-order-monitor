@@ -7,7 +7,9 @@ npm run build
 cd ..
 cp docker-compose-template.yml docker-compose.yml
 docker compose -f 'docker-compose.yml' up -d --build
-sleep 1
+
+echo "Initializing database..."
+sleep 5
 ./init-db.sh
 
 echo "Setup complete. Access the application at http://localhost:9000/login"
